@@ -6,6 +6,7 @@
 // define a mutex variable
 pthread_mutex_t mutex;
 
+
 // shared variable
 int shared_data = 0;
 bool condition = false;
@@ -19,6 +20,7 @@ void* writing_data(void* arg) {
 
     for (int i = 1; i <= 10; i++) {
 
+        // checks if it can write new value into shared_data
         while (condition) {}
 
         // lock the mutex before accessing the shared resources
@@ -26,7 +28,9 @@ void* writing_data(void* arg) {
 
         printf("Thread1 %d writing into shared data. \n", thread_id);
 
+        // set new value into shared_data
         shared_data = rand_r(&seed);
+        // set condition to thrue, indicating that there is data to read
         condition = true;
         printf("Thread1 -> Current value: %d\n", shared_data);
 
@@ -42,14 +46,16 @@ void* reading_data(void* arg) {
 
     for (int i = 1; i <= 10; i++) {
 
+        // checks if there is new data to read
         while (!condition) {}
 
         // lock the mutex before accessing the shared resources
         pthread_mutex_lock(&mutex);
 
+        // reading data
         printf("Thread2 %d reading from shared data.\n", thread_id);
-
         printf("Thread2 -> Current value: %d\n", shared_data);
+        // set condition to false, indicating that the data has been read
         condition = false;
 
         // unlock the mutex after accessing the shared resources
